@@ -1031,8 +1031,17 @@ main {
 
 .data-table th,
 .data-table td {
-  padding: 8px 6px;
+  padding: 8px 10px;
   white-space: nowrap;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.data-table th {
+  background: var(--gray-50);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.5px;
 }
 
 .data-table th {
@@ -1040,7 +1049,17 @@ main {
 }
 
 .table-cell-id {
-  display: table-cell;
+  display: table-cell !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 50px;
+  min-width: 50px;
+  background: var(--gray-100) !important;
+  color: var(--gray-800) !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  text-align: center !important;
+  border-right: 1px solid var(--gray-200);
 }
 
 /* Botones tabla */
