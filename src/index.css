@@ -242,6 +242,39 @@ body {
   margin-top: 8px;
 }
 
+.demo-divider {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+  color: var(--gray-400);
+  font-size: 12px;
+}
+
+.demo-divider::before,
+.demo-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gray-200);
+}
+
+.demo-divider span {
+  padding: 0 12px;
+}
+
+.demo-banner {
+  background: linear-gradient(135deg, var(--primary-light) 0%, #e0e7ff 100%);
+  color: var(--primary);
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  margin-bottom: 24px;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .auth-link {
   text-align: center;
   margin-top: 24px;

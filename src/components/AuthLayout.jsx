@@ -2,7 +2,7 @@ import { Outlet, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function AuthLayout() {
-  const { user, loading, isLoggingIn, isAdmin } = useAuth();
+  const { user, loading, isLoggingIn, isAdmin, isDemo } = useAuth();
 
   if (loading || isLoggingIn) {
     return (
@@ -13,6 +13,10 @@ export default function AuthLayout() {
         </div>
       </div>
     );
+  }
+
+  if (isDemo) {
+    return <Navigate to="/demo/admin/users" replace />;
   }
 
   if (isAdmin) {

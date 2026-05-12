@@ -7,7 +7,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, loginDemo } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -75,6 +75,15 @@ export default function Login() {
           ) : (
             "Iniciar Sesión"
           )}
+        </button>
+        <div className="demo-divider">
+          <span>o</span>
+        </div>
+        <button type="button" className="btn btn-secondary btn-block" onClick={() => { loginDemo(); window.location.href = '/demo/admin/users'; }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polygon points="5,3 19,12 5,21"/>
+          </svg>
+          Modo Demostración
         </button>
       </form>
       <p className="auth-link">

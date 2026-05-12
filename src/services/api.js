@@ -1,10 +1,28 @@
 const API_URL = "https://task-proyect-api.vercel.app";
 
+function parseJwt(token) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
+  }
+}
+
 async function request(endpoint, options = {}) {
   const token = localStorage.getItem("token");
+  const isDemoMode = localStorage.getItem("demo_mode") === "true";
+  
   const headers = {
     "Content-Type": "application/json",
-    ...(token && { Authorization: `Bearer ${token}` }),
+    ...(token && !isDemoMode && { Authorization: `Bearer ${token}` }),
     ...options.headers,
   };
 
@@ -78,3 +96,5 @@ export const adminUserService = {
       method: "DELETE",
     }),
 };
+
+export { parseJwt };
