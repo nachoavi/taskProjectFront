@@ -1064,17 +1064,28 @@ main {
 
 /* Botones tabla */
 .table-actions {
+  display: flex;
   flex-direction: row;
-  gap: 4px;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
 }
 
 .table-actions .btn {
-  padding: 6px 8px;
-  font-size: 11px;
+  padding: 10px 14px;
+  font-size: 13px;
+  min-width: 44px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
 }
 
 .table-actions .btn svg {
-  display: none;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
 }
 
 /* Task list */
