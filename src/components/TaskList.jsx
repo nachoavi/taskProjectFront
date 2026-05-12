@@ -31,11 +31,7 @@ export default function TaskList() {
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [newTask, setNewTask] = useState({
-    title: "",
-    description: "",
-    dueDate: "",
-  });
+  const [newTask, setNewTask] = useState({ title: "", description: "", dueDate: "" });
   const [showForm, setShowForm] = useState(false);
 
   const fetchTasks = async () => {
@@ -58,13 +54,8 @@ export default function TaskList() {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      const taskData = {
-        title: newTask.title,
-        description: newTask.description,
-      };
-      if (newTask.dueDate) {
-        taskData.dueDate = new Date(newTask.dueDate).toISOString();
-      }
+      const taskData = { title: newTask.title, description: newTask.description };
+      if (newTask.dueDate) taskData.dueDate = new Date(newTask.dueDate).toISOString();
       await taskService.create(taskData);
       setNewTask({ title: "", description: "", dueDate: "" });
       setShowForm(false);
@@ -93,90 +84,159 @@ export default function TaskList() {
   });
 
   return (
-    <div className="tasks-container">
-      <div className="tasks-header">
-        <h2>Mis Tareas</h2>
-        <button onClick={() => setShowForm(!showForm)}>
-          {showForm ? "Cancelar" : "+ Nueva Tarea"}
-        </button>
+    <div>
+      <div className="page-header">
+        <div className="page-header-top">
+          <div>
+            <h1 className="page-title">Mis Tareas</h1>
+            <p className="page-subtitle">Gestiona tus tareas pendientes y completadas</p>
+          </div>
+          <div className="page-actions">
+            <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              {showForm ? "Cancelar" : "Nueva Tarea"}
+            </button>
+          </div>
+        </div>
       </div>
 
       {showForm && (
-        <form onSubmit={handleCreate} className="task-form">
-          <input
-            type="text"
-            placeholder="Título"
-            value={newTask.title}
-            onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Descripción"
-            value={newTask.description}
-            onChange={(e) =>
-              setNewTask({ ...newTask, description: e.target.value })
-            }
-          />
-          <input
-            type="datetime-local"
-            value={newTask.dueDate}
-            onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
-          />
-          <button type="submit">Crear Tarea</button>
-        </form>
+        <div className="card" style={{ marginBottom: 24 }}>
+          <div className="card-body">
+            <form onSubmit={handleCreate}>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Título de la tarea</label>
+                  <input
+                    type="text"
+                    value={newTask.title}
+                    onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                    required
+                    placeholder="Describe la tarea..."
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Fecha límite (opcional)</label>
+                  <input
+                    type="datetime-local"
+                    value={newTask.dueDate}
+                    onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label>Descripción (opcional)</label>
+                <input
+                  type="text"
+                  value={newTask.description}
+                  onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                  placeholder="Agrega detalles adicionales..."
+                />
+              </div>
+              <div className="form-actions">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowForm(false)}>
+                  Cancelar
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Crear Tarea
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
-      <div className="filter">
-        <label>Filtrar:</label>
-        <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-          <option value="all">Todas</option>
-          <option value="pending">Pendientes</option>
-          <option value="completed">Completadas</option>
-          <option value="overdue">Vencidas</option>
-        </select>
+      <div className="filter-bar">
+        <div className="filter-group">
+          <span className="filter-label">Filtrar:</span>
+          <select className="filter-select" value={filter} onChange={(e) => setFilter(e.target.value)}>
+            <option value="all">Todas</option>
+            <option value="pending">Pendientes</option>
+            <option value="completed">Completadas</option>
+            <option value="overdue">Vencidas</option>
+          </select>
+        </div>
+        <span style={{ color: 'var(--gray-400)', fontSize: 13 }}>
+          {filteredTasks.length} tarea{filteredTasks.length !== 1 ? 's' : ''}
+        </span>
       </div>
 
-      {error && <div className="error">{error}</div>}
-
-      {loading ? (
-        <p>Cargando...</p>
-      ) : filteredTasks.length === 0 ? (
-        <p className="empty">No hay tareas</p>
-      ) : (
-        <ul className="task-list">
-          {filteredTasks.map((task) => {
-            const taskStatus = getTaskStatus(task);
-            return (
-              <li
-                key={task.id}
-                className={`task-item ${taskStatus.class}`}
-              >
-                <div className="task-info">
-                  <h3>{task.title}</h3>
-                  {task.description && <p>{task.description}</p>}
-                  {task.dueDate && (
-                    <p className="due-date">Límite: {formatDate(task.dueDate)}</p>
-                  )}
-                  <span className={`role-badge ${taskStatus.class}`}>
-                    {taskStatus.status}
-                  </span>
-                </div>
-                <div className="task-actions">
-                  {!task.completed && taskStatus.class !== "overdue" && (
-                    <button
-                      onClick={() => handleComplete(task.id)}
-                      className="btn-complete"
-                    >
-                      Completar
-                    </button>
-                  )}
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+      {error && (
+        <div className="error-message" style={{ marginBottom: 24 }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          {error}
+        </div>
       )}
+
+      <div className="card">
+        {loading ? (
+          <div className="loading-state">
+            <div className="loading-spinner"></div>
+            <span>Cargando tareas...</span>
+          </div>
+        ) : filteredTasks.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-state-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+              </svg>
+            </div>
+            <p className="empty-state-title">No hay tareas</p>
+            <p className="empty-state-text">
+              {filter === "all" ? "Crea tu primera tarea para comenzar" : "No hay tareas con este filtro"}
+            </p>
+          </div>
+        ) : (
+          <ul className="task-list">
+            {filteredTasks.map((task) => {
+              const taskStatus = getTaskStatus(task);
+              return (
+                <li key={task.id} className={`task-item ${task.completed ? 'completed' : ''}`}>
+                  <div className="task-item-content">
+                    <div className="task-item-title">{task.title}</div>
+                    {task.description && (
+                      <div className="task-item-description">{task.description}</div>
+                    )}
+                    <div className="task-item-meta">
+                      {task.dueDate && (
+                        <span className="task-item-date">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                          </svg>
+                          {formatDate(task.dueDate)}
+                        </span>
+                      )}
+                      <span className={`status-badge status-${taskStatus.class || 'pending'}`}>
+                        {taskStatus.status}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="task-item-actions">
+                    {!task.completed && taskStatus.class !== "overdue" && (
+                      <button onClick={() => handleComplete(task.id)} className="btn btn-success btn-sm">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="20,6 9,17 4,12"/>
+                        </svg>
+                        Completar
+                      </button>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

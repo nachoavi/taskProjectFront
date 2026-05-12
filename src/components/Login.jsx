@@ -29,37 +29,57 @@ export default function Login() {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <h2>Iniciar Sesión</h2>
-        {error && <div className="error">{error}</div>}
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>Contraseña</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <button type="submit" disabled={loading}>
-            {loading ? "Cargando..." : "Iniciar Sesión"}
-          </button>
-        </form>
-        <p className="auth-link">
-          ¿No tienes cuenta? <Link to="/register">Regístrate</Link>
-        </p>
-      </div>
-    </div>
+    <>
+      <h2>Iniciar Sesión</h2>
+      {error && (
+        <div className="error-message">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          {error}
+        </div>
+      )}
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="email">Correo electrónico</label>
+          <input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            placeholder="correo@empresa.com"
+            autoComplete="email"
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="password">Contraseña</label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            placeholder="Ingrese su contraseña"
+            autoComplete="current-password"
+          />
+        </div>
+        <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+          {loading ? (
+            <>
+              <span className="loading-spinner" style={{width: 16, height: 16, margin: 0}}></span>
+              Iniciando sesión...
+            </>
+          ) : (
+            "Iniciar Sesión"
+          )}
+        </button>
+      </form>
+      <p className="auth-link">
+        ¿No tiene cuenta? <Link to="/register">Solicitar acceso</Link>
+      </p>
+    </>
   );
 }
