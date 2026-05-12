@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000";
+const API_URL = "https://task-proyect-api.vercel.app";
 
 async function request(endpoint, options = {}) {
   const token = localStorage.getItem("token");
