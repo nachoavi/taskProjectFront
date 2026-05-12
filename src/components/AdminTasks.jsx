@@ -263,73 +263,75 @@ export default function AdminTasks() {
             </p>
           </div>
         ) : (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Título</th>
-                <th>Usuario</th>
-                <th>Fecha Límite</th>
-                <th>Estado</th>
-                <th style={{ textAlign: 'right' }}>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTasks.map((task) => {
-                const taskStatus = getTaskStatus(task);
-                return (
-                  <tr key={task.id} className={taskStatus.class === 'overdue' ? '' : taskStatus.class === 'warning' ? '' : ''}>
-                    <td className="table-cell-id">{task.id}</td>
-                    <td style={{ fontWeight: 500, color: 'var(--gray-900)' }}>{task.title}</td>
-                    <td>
-                      {task.user ? (
-                        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <span style={{
-                            width: 28,
-                            height: 28,
-                            borderRadius: '50%',
-                            background: 'var(--primary-light)',
-                            color: 'var(--primary)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: 12,
-                            fontWeight: 600
-                          }}>
-                            {task.user.username.charAt(0).toUpperCase()}
+          <div className="data-table-wrapper">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Título</th>
+                  <th>Usuario</th>
+                  <th>Fecha Límite</th>
+                  <th>Estado</th>
+                  <th style={{ textAlign: 'right' }}>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredTasks.map((task) => {
+                  const taskStatus = getTaskStatus(task);
+                  return (
+                    <tr key={task.id} className={taskStatus.class === 'overdue' ? '' : taskStatus.class === 'warning' ? '' : ''}>
+                      <td className="table-cell-id">{task.id}</td>
+                      <td style={{ fontWeight: 500, color: 'var(--gray-900)' }}>{task.title}</td>
+                      <td>
+                        {task.user ? (
+                          <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span style={{
+                              width: 28,
+                              height: 28,
+                              borderRadius: '50%',
+                              background: 'var(--primary-light)',
+                              color: 'var(--primary)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: 12,
+                              fontWeight: 600
+                            }}>
+                              {task.user.username.charAt(0).toUpperCase()}
+                            </span>
+                            {task.user.username}
                           </span>
-                          {task.user.username}
+                        ) : '-'}
+                      </td>
+                      <td style={{ color: 'var(--gray-600)' }}>{formatDate(task.dueDate)}</td>
+                      <td>
+                        <span className={`status-badge status-${task.completed ? 'completed' : taskStatus.class || 'pending'}`}>
+                          {task.completed ? "Completada" : taskStatus.status}
                         </span>
-                      ) : '-'}
-                    </td>
-                    <td style={{ color: 'var(--gray-600)' }}>{formatDate(task.dueDate)}</td>
-                    <td>
-                      <span className={`status-badge status-${task.completed ? 'completed' : taskStatus.class || 'pending'}`}>
-                        {task.completed ? "Completada" : taskStatus.status}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="table-actions" style={{ justifyContent: 'flex-end' }}>
-                        <button
-                          onClick={() => handleDelete(task.id)}
-                          className="btn btn-danger btn-sm"
-                          title="Eliminar tarea"
-                        >
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="3,6 5,6 21,6"/>
-                            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                            <line x1="10" y1="11" x2="10" y2="17"/>
-                            <line x1="14" y1="11" x2="14" y2="17"/>
-                          </svg>
-                          Eliminar
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      </td>
+                      <td>
+                        <div className="table-actions" style={{ justifyContent: 'flex-end' }}>
+                          <button
+                            onClick={() => handleDelete(task.id)}
+                            className="btn btn-danger btn-sm"
+                            title="Eliminar tarea"
+                          >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <polyline points="3,6 5,6 21,6"/>
+                              <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                              <line x1="10" y1="11" x2="10" y2="17"/>
+                              <line x1="14" y1="11" x2="14" y2="17"/>
+                            </svg>
+                            Eliminar
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

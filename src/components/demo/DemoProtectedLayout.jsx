@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { Outlet, Navigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 export default function DemoProtectedLayout() {
   const { user, loading, logout, isDemo } = useAuth();
   const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   if (loading) {
     return (
@@ -49,8 +51,24 @@ export default function DemoProtectedLayout() {
             DEMO
           </span>
         </div>
-        <nav>
-          <Link to="/demo/tasks" className={`nav-link ${isActive('/demo/tasks') ? 'active' : ''}`}>
+        <button className="mobile-menu-btn" onClick={() => setMenuOpen(!menuOpen)}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            {menuOpen ? (
+              <>
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </>
+            ) : (
+              <>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
+              </>
+            )}
+          </svg>
+        </button>
+        <nav className={`header-nav ${menuOpen ? 'open' : ''}`}>
+          <Link to="/demo/tasks" className={`nav-link ${isActive('/demo/tasks') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M9 11l3 3L22 4"/>
               <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
@@ -58,7 +76,7 @@ export default function DemoProtectedLayout() {
             Mis Tareas
           </Link>
           <div className="nav-divider"></div>
-          <Link to="/demo/admin/tasks" className={`nav-link ${isActive('/demo/admin/tasks') ? 'active' : ''}`}>
+          <Link to="/demo/admin/tasks" className={`nav-link ${isActive('/demo/admin/tasks') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="3" width="7" height="7"/>
               <rect x="14" y="3" width="7" height="7"/>
@@ -67,7 +85,7 @@ export default function DemoProtectedLayout() {
             </svg>
             Gestión Tareas
           </Link>
-          <Link to="/demo/admin/users" className={`nav-link ${isActive('/demo/admin/users') ? 'active' : ''}`}>
+          <Link to="/demo/admin/users" className={`nav-link ${isActive('/demo/admin/users') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
               <circle cx="9" cy="7" r="4"/>
@@ -77,7 +95,7 @@ export default function DemoProtectedLayout() {
             Usuarios
           </Link>
           <div className="nav-divider"></div>
-          <button onClick={handleLogout} className="btn-logout">
+          <button onClick={() => { handleLogout(); setMenuOpen(false); }} className="btn-logout">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
               <polyline points="16,17 21,12 16,7"/>
