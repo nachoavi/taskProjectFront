@@ -982,6 +982,18 @@ main {
   color: var(--gray-500);
 }
 
+.demo-banner {
+  margin-bottom: 16px;
+}
+
+.card-form {
+  margin-bottom: 16px;
+}
+
+.error-message {
+  margin-bottom: 16px;
+}
+
 .card-body {
   padding: 16px;
 }
@@ -1284,6 +1296,18 @@ main {
   .task-count {
     font-size: 13px;
     white-space: nowrap;
+  }
+
+  .demo-banner {
+    margin-bottom: 24px;
+  }
+
+  .card-form {
+    margin-bottom: 24px;
+  }
+
+  .error-message {
+    margin-bottom: 24px;
   }
 
   .card-body {

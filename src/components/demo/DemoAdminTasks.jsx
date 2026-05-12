@@ -108,7 +108,7 @@ export default function DemoAdminTasks() {
       </div>
 
       {showForm && (
-        <div className="card" style={{ marginBottom: 24 }}>
+        <div className="card card-form">
           <div className="card-header">
             <h3 className="card-title">Crear Nueva Tarea</h3>
           </div>
@@ -186,7 +186,7 @@ export default function DemoAdminTasks() {
       <div className="card">
         <div className="card-header">
           <h2 className="card-title">Todas las Tareas</h2>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div className="card-header-right">
             <div className="filter-group">
               <span className="filter-label">Filtrar:</span>
               <select className="filter-select" value={filter} onChange={(e) => setFilter(e.target.value)}>
@@ -196,7 +196,7 @@ export default function DemoAdminTasks() {
                 <option value="overdue">Vencidas</option>
               </select>
             </div>
-            <span style={{ fontSize: 13, color: 'var(--gray-500)' }}>
+            <span className="task-count">
               {filteredTasks.length} tarea{filteredTasks.length !== 1 ? 's' : ''}
             </span>
           </div>
@@ -214,65 +214,70 @@ export default function DemoAdminTasks() {
               {filter === "all" ? "Crea una nueva tarea para comenzar" : "No hay tareas con este filtro"}
             </p>
           </div>
-        ) : (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Título</th>
-                <th>Usuario</th>
-                <th>Fecha Límite</th>
-                <th>Estado</th>
-                <th style={{ textAlign: 'right' }}>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTasks.map((task) => {
-                const taskStatus = getTaskStatus(task);
-                return (
-                  <tr key={task.id}>
-                    <td className="table-cell-id">{task.id}</td>
-                    <td style={{ fontWeight: 500, color: 'var(--gray-900)' }}>{task.title}</td>
-                    <td>
-                      {task.user ? (
-                        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <span style={{
-                            width: 28,
-                            height: 28,
-                            borderRadius: '50%',
-                            background: 'var(--primary-light)',
-                            color: 'var(--primary)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: 12,
-                            fontWeight: 600
-                          }}>
-                            {task.user.username.charAt(0).toUpperCase()}
+) : (
+          <div className="table-container">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Título</th>
+                  <th>Usuario</th>
+                  <th>Fecha</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredTasks.map((task) => {
+                  const taskStatus = getTaskStatus(task);
+                  return (
+                    <tr key={task.id}>
+                      <td className="table-cell-id">{task.id}</td>
+                      <td>{task.title}</td>
+                      <td>
+                        {task.user ? (
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                            <span style={{
+                              width: 24,
+                              height: 24,
+                              borderRadius: '50%',
+                              background: 'var(--primary-light)',
+                              color: 'var(--primary)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: 10,
+                              fontWeight: 600
+                            }}>
+                              {task.user.username.charAt(0).toUpperCase()}
+                            </span>
+                            {task.user.username}
                           </span>
-                          {task.user.username}
+                        ) : '-'}
+                      </td>
+                      <td>{task.dueDate ? formatDate(task.dueDate) : '-'}</td>
+                      <td>
+                        <span className={`status-badge status-${task.completed ? 'completed' : taskStatus.class || 'pending'}`}>
+                          {task.completed ? "OK" : taskStatus.status}
                         </span>
-                      ) : '-'}
-                    </td>
-                    <td style={{ color: 'var(--gray-600)' }}>{formatDate(task.dueDate)}</td>
-                    <td>
-                      <span className={`status-badge status-${task.completed ? 'completed' : taskStatus.class || 'pending'}`}>
-                        {task.completed ? "Completada" : taskStatus.status}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="table-actions" style={{ justifyContent: 'flex-end' }}>
-                        {!task.completed && (
-                          <button
-                            onClick={() => handleComplete(task.id)}
-                            className="btn btn-success btn-sm"
-                            title="Marcar como completada"
-                          >
+                      </td>
+                      <td>
+                        <div className="table-actions">
+                          <button onClick={() => handleDelete(task.id)} className="btn btn-danger btn-sm">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <polyline points="20,6 9,17 4,12"/>
+                              <polyline points="3,6 5,6 21,6"/>
+                              <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
                             </svg>
                           </button>
-                        )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
                         <button
                           onClick={() => handleDelete(task.id)}
                           className="btn btn-danger btn-sm"
