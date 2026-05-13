@@ -33,6 +33,7 @@ export default function AdminTasks() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [filter, setFilter] = useState("all");
+  const [userFilter, setUserFilter] = useState("all");
   const [showForm, setShowForm] = useState(false);
   const [newTask, setNewTask] = useState({
     title: "",
@@ -107,6 +108,8 @@ export default function AdminTasks() {
 
   const filteredTasks = tasks.filter((task) => {
     const taskStatus = getTaskStatus(task);
+    const taskUserId = task.userId || (task.user && task.user.id);
+    if (userFilter !== "all" && taskUserId !== parseInt(userFilter)) return false;
     if (filter === "all") return true;
     if (filter === "completed") return task.completed;
     if (filter === "pending")
@@ -293,23 +296,27 @@ export default function AdminTasks() {
       <div className="card">
         <div className="card-header">
           <h2 className="card-title">Todas las Tareas</h2>
-          <div className="card-header-right">
+<div className="card-header-right">
             <div className="filter-group">
-              <span className="filter-label">Filtrar:</span>
-              <select
-                className="filter-select"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-              >
-                <option value="all">Todas</option>
+              <span className="filter-label">Usuario:</span>
+              <select className="filter-select" value={userFilter} onChange={(e) => setUserFilter(e.target.value)}>
+                <option value="all">Todos</option>
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>{user.username}</option>
+                ))}
+              </select>
+            </div>
+            <div className="filter-group">
+              <span className="filter-label">Estado:</span>
+              <select className="filter-select" value={filter} onChange={(e) => setFilter(e.target.value)}>
+                <option value="all">Todos</option>
                 <option value="pending">Pendientes</option>
                 <option value="completed">Completadas</option>
                 <option value="overdue">Vencidas</option>
               </select>
             </div>
             <span className="task-count">
-              {filteredTasks.length} tarea
-              {filteredTasks.length !== 1 ? "s" : ""}
+              {filteredTasks.length} tarea{filteredTasks.length !== 1 ? 's' : ''}
             </span>
           </div>
         </div>
