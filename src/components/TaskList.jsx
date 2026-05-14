@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { taskService } from "../services/api";
+import { validateTitle, validateDescription, validateDueDate } from "../utils/validations";
 
 function getTaskStatus(task) {
   if (task.completed) return { status: "Completada", class: "completed" };
@@ -32,6 +33,7 @@ export default function TaskList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [newTask, setNewTask] = useState({ title: "", description: "", dueDate: "" });
+  const [formErrors, setFormErrors] = useState({});
   const [showForm, setShowForm] = useState(false);
 
   const fetchTasks = async () => {
@@ -53,9 +55,21 @@ export default function TaskList() {
 
   const handleCreate = async (e) => {
     e.preventDefault();
+    const errors = {};
+    const titleErr = validateTitle(newTask.title);
+    const descErr = validateDescription(newTask.description);
+    const dateErr = validateDueDate(newTask.dueDate);
+    if (titleErr) errors.title = titleErr;
+    if (descErr) errors.description = descErr;
+    if (dateErr) errors.dueDate = dateErr;
+    if (Object.keys(errors).length > 0) { setFormErrors(errors); return; }
+    setFormErrors({});
     try {
-      const taskData = { title: newTask.title, description: newTask.description };
-      if (newTask.dueDate) taskData.dueDate = new Date(newTask.dueDate).toISOString();
+      const taskData = {
+        title: newTask.title,
+        description: newTask.description,
+        dueDate: new Date(newTask.dueDate).toISOString(),
+      };
       await taskService.create(taskData);
       setNewTask({ title: "", description: "", dueDate: "" });
       setShowForm(false);
@@ -64,6 +78,9 @@ export default function TaskList() {
       setError(err.message);
     }
   };
+
+  const clearFormField = (field) =>
+    setFormErrors((prev) => ({ ...prev, [field]: null }));
 
   const handleComplete = async (id) => {
     try {
@@ -109,22 +126,25 @@ export default function TaskList() {
             <form onSubmit={handleCreate}>
               <div className="form-row">
                 <div className="form-group">
-                  <label>Título de la tarea</label>
+                  <label>Título de la tarea *</label>
                   <input
                     type="text"
                     value={newTask.title}
-                    onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                    required
+                    onChange={(e) => { setNewTask({ ...newTask, title: e.target.value }); clearFormField("title"); }}
+                    className={formErrors.title ? "input-error" : ""}
                     placeholder="Describe la tarea..."
                   />
+                  {formErrors.title && <span className="field-error">{formErrors.title}</span>}
                 </div>
                 <div className="form-group">
-                  <label>Fecha límite (opcional)</label>
+                  <label>Fecha límite *</label>
                   <input
                     type="datetime-local"
                     value={newTask.dueDate}
-                    onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
+                    onChange={(e) => { setNewTask({ ...newTask, dueDate: e.target.value }); clearFormField("dueDate"); }}
+                    className={formErrors.dueDate ? "input-error" : ""}
                   />
+                  {formErrors.dueDate && <span className="field-error">{formErrors.dueDate}</span>}
                 </div>
               </div>
               <div className="form-group">
@@ -132,9 +152,11 @@ export default function TaskList() {
                 <input
                   type="text"
                   value={newTask.description}
-                  onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                  onChange={(e) => { setNewTask({ ...newTask, description: e.target.value }); clearFormField("description"); }}
+                  className={formErrors.description ? "input-error" : ""}
                   placeholder="Agrega detalles adicionales..."
                 />
+                {formErrors.description && <span className="field-error">{formErrors.description}</span>}
               </div>
               <div className="form-actions">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowForm(false)}>

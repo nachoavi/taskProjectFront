@@ -1,18 +1,36 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { validateUsername, validateEmail, validatePassword } from '../utils/validations';
 
 export default function Register() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
+  const clearField = (field) =>
+    setFieldErrors((prev) => ({ ...prev, [field]: null }));
+
+  const validate = () => {
+    const errors = {};
+    const usernameErr = validateUsername(username);
+    const emailErr = validateEmail(email);
+    const passErr = validatePassword(password);
+    if (usernameErr) errors.username = usernameErr;
+    if (emailErr) errors.email = emailErr;
+    if (passErr) errors.password = passErr;
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validate()) return;
     setError('');
     setLoading(true);
     try {
@@ -38,18 +56,19 @@ export default function Register() {
           {error}
         </div>
       )}
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
         <div className="form-group">
           <label htmlFor="username">Nombre de usuario</label>
           <input
             id="username"
             type="text"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
+            onChange={(e) => { setUsername(e.target.value); clearField('username'); }}
+            className={fieldErrors.username ? 'input-error' : ''}
             placeholder="nombre.apellido"
             autoComplete="username"
           />
+          {fieldErrors.username && <span className="field-error">{fieldErrors.username}</span>}
         </div>
         <div className="form-group">
           <label htmlFor="email">Correo electrónico</label>
@@ -57,11 +76,12 @@ export default function Register() {
             id="email"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
+            onChange={(e) => { setEmail(e.target.value); clearField('email'); }}
+            className={fieldErrors.email ? 'input-error' : ''}
             placeholder="correo@empresa.com"
             autoComplete="email"
           />
+          {fieldErrors.email && <span className="field-error">{fieldErrors.email}</span>}
         </div>
         <div className="form-group">
           <label htmlFor="password">Contraseña</label>
@@ -69,11 +89,12 @@ export default function Register() {
             id="password"
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
+            onChange={(e) => { setPassword(e.target.value); clearField('password'); }}
+            className={fieldErrors.password ? 'input-error' : ''}
             placeholder="Mínimo 6 caracteres"
             autoComplete="new-password"
           />
+          {fieldErrors.password && <span className="field-error">{fieldErrors.password}</span>}
         </div>
         <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
           {loading ? (

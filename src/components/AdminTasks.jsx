@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { taskService, adminUserService } from "../services/api";
 import { Link } from "react-router-dom";
+import { validateTitle, validateDescription, validateDueDate } from "../utils/validations";
 
 function getTaskStatus(task) {
   if (task.completed) return { status: "Completada", class: "completed" };
@@ -35,6 +36,7 @@ export default function AdminTasks() {
   const [filter, setFilter] = useState("all");
   const [userFilter, setUserFilter] = useState("all");
   const [showForm, setShowForm] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
@@ -68,20 +70,28 @@ export default function AdminTasks() {
     fetchUsers();
   }, []);
 
+  const clearFormField = (field) =>
+    setFormErrors((prev) => ({ ...prev, [field]: null }));
+
   const handleCreate = async (e) => {
     e.preventDefault();
-    if (!newTask.title || !newTask.userId) {
-      setError("El título y usuario son obligatorios");
-      return;
-    }
+    const errors = {};
+    const titleErr = validateTitle(newTask.title);
+    const descErr = validateDescription(newTask.description);
+    const dateErr = validateDueDate(newTask.dueDate);
+    if (titleErr) errors.title = titleErr;
+    if (descErr) errors.description = descErr;
+    if (dateErr) errors.dueDate = dateErr;
+    if (!newTask.userId) errors.userId = "Debe seleccionar un usuario";
+    if (Object.keys(errors).length > 0) { setFormErrors(errors); return; }
+    setFormErrors({});
     try {
       const taskData = {
         title: newTask.title,
         description: newTask.description,
         userId: parseInt(newTask.userId),
+        dueDate: new Date(newTask.dueDate).toISOString(),
       };
-      if (newTask.dueDate)
-        taskData.dueDate = new Date(newTask.dueDate).toISOString();
       await taskService.createByAdmin(taskData);
       setNewTask({ title: "", description: "", userId: "", dueDate: "" });
       setShowForm(false);
@@ -185,25 +195,22 @@ export default function AdminTasks() {
                   <input
                     type="text"
                     value={newTask.title}
-                    onChange={(e) =>
-                      setNewTask({ ...newTask, title: e.target.value })
-                    }
-                    required
+                    onChange={(e) => { setNewTask({ ...newTask, title: e.target.value }); clearFormField("title"); }}
+                    className={formErrors.title ? "input-error" : ""}
                     placeholder="Describe la tarea..."
                   />
+                  {formErrors.title && <span className="field-error">{formErrors.title}</span>}
                 </div>
                 <div className="form-group">
                   <label>Asignar a *</label>
                   <select
                     value={newTask.userId}
-                    onChange={(e) =>
-                      setNewTask({ ...newTask, userId: e.target.value })
-                    }
-                    required
+                    onChange={(e) => { setNewTask({ ...newTask, userId: e.target.value }); clearFormField("userId"); }}
+                    className={formErrors.userId ? "input-error" : ""}
                     style={{
                       width: "100%",
                       padding: "10px 14px",
-                      border: "1px solid var(--gray-300)",
+                      border: formErrors.userId ? "1px solid var(--danger)" : "1px solid var(--gray-300)",
                       borderRadius: "var(--radius)",
                       fontSize: 14,
                       fontFamily: "inherit",
@@ -216,29 +223,30 @@ export default function AdminTasks() {
                       </option>
                     ))}
                   </select>
+                  {formErrors.userId && <span className="field-error">{formErrors.userId}</span>}
                 </div>
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label>Descripción</label>
+                  <label>Descripción (opcional)</label>
                   <input
                     type="text"
                     value={newTask.description}
-                    onChange={(e) =>
-                      setNewTask({ ...newTask, description: e.target.value })
-                    }
+                    onChange={(e) => { setNewTask({ ...newTask, description: e.target.value }); clearFormField("description"); }}
+                    className={formErrors.description ? "input-error" : ""}
                     placeholder="Agrega detalles adicionales..."
                   />
+                  {formErrors.description && <span className="field-error">{formErrors.description}</span>}
                 </div>
                 <div className="form-group">
-                  <label>Fecha límite</label>
+                  <label>Fecha límite *</label>
                   <input
                     type="datetime-local"
                     value={newTask.dueDate}
-                    onChange={(e) =>
-                      setNewTask({ ...newTask, dueDate: e.target.value })
-                    }
+                    onChange={(e) => { setNewTask({ ...newTask, dueDate: e.target.value }); clearFormField("dueDate"); }}
+                    className={formErrors.dueDate ? "input-error" : ""}
                   />
+                  {formErrors.dueDate && <span className="field-error">{formErrors.dueDate}</span>}
                 </div>
               </div>
               {error && (
