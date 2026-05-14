@@ -38,7 +38,8 @@ async function request(endpoint, options = {}) {
     throw new Error(error.message || "Error en la solicitud");
   }
 
-  return response.json();
+  const text = await response.text();
+  return text ? JSON.parse(text) : null;
 }
 
 export const authService = {
